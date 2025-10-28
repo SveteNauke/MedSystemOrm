@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Farah Mulaomerovic\\Desktop\\MedSysOrm\\MedSys.Domain\\MedSys.Domain.csproj": {}
+    "C:\\Users\\Farah Mulaomerovic\\Desktop\\MedSystemOrm\\MedSys.Domain\\MedSys.Domain.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Farah Mulaomerovic\\Desktop\\MedSysOrm\\MedSys.Domain\\MedSys.Domain.csproj": {
+    "C:\\Users\\Farah Mulaomerovic\\Desktop\\MedSystemOrm\\MedSys.Domain\\MedSys.Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Farah Mulaomerovic\\Desktop\\MedSysOrm\\MedSys.Domain\\MedSys.Domain.csproj",
+        "projectUniqueName": "C:\\Users\\Farah Mulaomerovic\\Desktop\\MedSystemOrm\\MedSys.Domain\\MedSys.Domain.csproj",
         "projectName": "MedSys.Domain",
-        "projectPath": "C:\\Users\\Farah Mulaomerovic\\Desktop\\MedSysOrm\\MedSys.Domain\\MedSys.Domain.csproj",
+        "projectPath": "C:\\Users\\Farah Mulaomerovic\\Desktop\\MedSystemOrm\\MedSys.Domain\\MedSys.Domain.csproj",
         "packagesPath": "C:\\Users\\Farah Mulaomerovic\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Farah Mulaomerovic\\Desktop\\MedSysOrm\\MedSys.Domain\\obj\\",
+        "outputPath": "C:\\Users\\Farah Mulaomerovic\\Desktop\\MedSystemOrm\\MedSys.Domain\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

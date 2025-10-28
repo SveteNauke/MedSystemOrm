@@ -1,0 +1,12 @@
+C:\Users\Farah Mulaomerovic\Desktop\MedSystemOrm\MedSys.Domain\bin\Debug\net9.0\MedSys.Domain.deps.json
+C:\Users\Farah Mulaomerovic\Desktop\MedSystemOrm\MedSys.Domain\bin\Debug\net9.0\MedSys.Domain.dll
+C:\Users\Farah Mulaomerovic\Desktop\MedSystemOrm\MedSys.Domain\bin\Debug\net9.0\MedSys.Domain.pdb
+C:\Users\Farah Mulaomerovic\Desktop\MedSystemOrm\MedSys.Domain\obj\Debug\net9.0\MedSys.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Farah Mulaomerovic\Desktop\MedSystemOrm\MedSys.Domain\obj\Debug\net9.0\MedSys.Domain.AssemblyInfoInputs.cache
+C:\Users\Farah Mulaomerovic\Desktop\MedSystemOrm\MedSys.Domain\obj\Debug\net9.0\MedSys.Domain.AssemblyInfo.cs
+C:\Users\Farah Mulaomerovic\Desktop\MedSystemOrm\MedSys.Domain\obj\Debug\net9.0\MedSys.Domain.csproj.CoreCompileInputs.cache
+C:\Users\Farah Mulaomerovic\Desktop\MedSystemOrm\MedSys.Domain\obj\Debug\net9.0\MedSys.Domain.sourcelink.json
+C:\Users\Farah Mulaomerovic\Desktop\MedSystemOrm\MedSys.Domain\obj\Debug\net9.0\MedSys.Domain.dll
+C:\Users\Farah Mulaomerovic\Desktop\MedSystemOrm\MedSys.Domain\obj\Debug\net9.0\refint\MedSys.Domain.dll
+C:\Users\Farah Mulaomerovic\Desktop\MedSystemOrm\MedSys.Domain\obj\Debug\net9.0\MedSys.Domain.pdb
+C:\Users\Farah Mulaomerovic\Desktop\MedSystemOrm\MedSys.Domain\obj\Debug\net9.0\ref\MedSys.Domain.dll

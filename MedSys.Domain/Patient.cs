@@ -8,7 +8,7 @@ public class Patient
 {
     public int Id { get; set; }
     public string Fname { get; set; } = default!;
-    public int Lname { get; set; } = default!;
+    public string Lname { get; set; } = default!;
     public DateTime? BirthDate { get; set; }
 
 
