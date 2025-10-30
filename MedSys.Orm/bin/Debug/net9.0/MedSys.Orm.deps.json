@@ -8,7 +8,6 @@
     ".NETCoreApp,Version=v9.0": {
       "MedSys.Orm/1.0.0": {
         "dependencies": {
-          "MedSys.Domain": "1.0.0",
           "Npgsql": "9.0.4"
         },
         "runtime": {
@@ -44,14 +43,6 @@
             "fileVersion": "9.0.4.0"
           }
         }
-      },
-      "MedSys.Domain/1.0.0": {
-        "runtime": {
-          "MedSys.Domain.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
-          }
-        }
       }
     }
   },
@@ -81,11 +72,6 @@
       "sha512": "sha512-68BASXH0FAEuL/J4J0eRfYC8/3vzqQTmoW8zDzNf0JgaVxc7LZeEkS6jaG0ib3voFLxY5ZiCwJG+uQM+mzuu0Q==",
       "path": "npgsql/9.0.4",
       "hashPath": "npgsql.9.0.4.nupkg.sha512"
-    },
-    "MedSys.Domain/1.0.0": {
-      "type": "project",
-      "serviceable": false,
-      "sha512": ""
     }
   }
 }

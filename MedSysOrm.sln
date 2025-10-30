@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedSys.Orm", "MedSys.Orm\Me
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedSys.App", "MedSys.App\MedSys.App.csproj", "{22ACA7CF-A6BC-4996-BE5B-3C9D67E61A88}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PgPing", "PgPing\PgPing.csproj", "{89928EE0-E368-4308-8D02-E7826ADA0AF4}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

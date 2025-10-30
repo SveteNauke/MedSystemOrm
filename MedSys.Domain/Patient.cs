@@ -1,16 +1,22 @@
-﻿using System.Linq.Expressions;
-
+﻿
+using MedSys.Orm;
 namespace MedSys.Domain;
 
 public enum VisitType { GP, BLOOD, XRAY, CT, MR, ULTRA, EKG, ECHO, EYE, DERM, DENT, MAMMO, EEG }
 
+[Table("patients")]
 public class Patient
 {
-    public int Id { get; set; }
-    public string Fname { get; set; } = default!;
-    public string Lname { get; set; } = default!;
-    public DateTime? BirthDate { get; set; }
+    [Key] public int Id { get; set; }
 
+    [Column(Length = 80, Nullable = false)]
+    public string Fname { get; set; } = default!;
+
+    [Column(Length = 80, Nullable = false)]
+    public string Lname { get; set; } = default!;
+
+    [Column(Nullable = true)]
+    public DateTime? BirthDate { get; set; }
 
     public List<Visit> Visits { get; set; } = new();
     public List<Prescription> Prescriptions { get; set; } = new();

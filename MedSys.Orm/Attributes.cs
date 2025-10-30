@@ -19,9 +19,11 @@ public sealed class KeyAttribute : Attribute
 [AttributeUsage(AttributeTargets.Property, Inherited = true)]
 public sealed class ColumnAttribute : Attribute
 {
+    private int length;
+
     public string? Name { get; set; }
     public string? TypeName { get; set; }
-    public int? Length { get; set; }
+    public int Length { get; set; }
     public bool Nullable { get; set; } = true;
     public string? DefaultSql { get; set; }
     public bool Unique { get; set; } = false;
