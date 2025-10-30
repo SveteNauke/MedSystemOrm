@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MedSys.Domain")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8b0ed36f6c586a80eb1b125f8fae964c0748380b")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d419012a4e980a25f37d463cb7d04747c96664da")]
 [assembly: System.Reflection.AssemblyProductAttribute("MedSys.Domain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MedSys.Domain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
