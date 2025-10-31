@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Farah\\Desktop\\MedSystemOrm\\MedSys.Orm\\MedSys.Orm.csproj": {}
+    "C:\\Users\\Farah Mulaomerovic\\Desktop\\MedSystemOrm\\MedSys.Orm\\MedSys.Orm.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Farah\\Desktop\\MedSystemOrm\\MedSys.Orm\\MedSys.Orm.csproj": {
+    "C:\\Users\\Farah Mulaomerovic\\Desktop\\MedSystemOrm\\MedSys.Orm\\MedSys.Orm.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Farah\\Desktop\\MedSystemOrm\\MedSys.Orm\\MedSys.Orm.csproj",
+        "projectUniqueName": "C:\\Users\\Farah Mulaomerovic\\Desktop\\MedSystemOrm\\MedSys.Orm\\MedSys.Orm.csproj",
         "projectName": "MedSys.Orm",
-        "projectPath": "C:\\Users\\Farah\\Desktop\\MedSystemOrm\\MedSys.Orm\\MedSys.Orm.csproj",
-        "packagesPath": "C:\\Users\\Farah\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Farah\\Desktop\\MedSystemOrm\\MedSys.Orm\\obj\\",
+        "projectPath": "C:\\Users\\Farah Mulaomerovic\\Desktop\\MedSystemOrm\\MedSys.Orm\\MedSys.Orm.csproj",
+        "packagesPath": "C:\\Users\\Farah Mulaomerovic\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Farah Mulaomerovic\\Desktop\\MedSystemOrm\\MedSys.Orm\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\Farah\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Farah Mulaomerovic\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],

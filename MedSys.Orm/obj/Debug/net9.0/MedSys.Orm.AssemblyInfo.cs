@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MedSys.Orm")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2abd57abe92ae1ec883db15d28d49ca4aa809249")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+645008ded72c2b9b2f1964049d84520d223b7d7f")]
 [assembly: System.Reflection.AssemblyProductAttribute("MedSys.Orm")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MedSys.Orm")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
