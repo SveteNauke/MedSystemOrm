@@ -10,7 +10,8 @@ public sealed class ColumnMeta
     public ColumnAttribute? ColAttr { get; init; }
     public KeyAttribute? KeyAttr { get; init; }
     public ForeignKeyAttribute? FkAttr { get; init; }
-    public bool IsKey => KeyAttr is not null;
+
+    public bool IsKey => KeyAttr != null;
 }
 
 public sealed class EntityMeta
@@ -18,57 +19,48 @@ public sealed class EntityMeta
     public Type ClrType { get; init; } = default!;
     public string TableName { get; init; } = default!;
     public ColumnMeta Key { get; init; } = default!;
-
     public List<ColumnMeta> Columns { get; init; } = new();
 
     public static EntityMeta From<T>() => From(typeof(T));
 
-    private static EntityMeta From(Type t)
+    public static EntityMeta From(Type t)
     {
-        var table = t.GetCustomAttributes<TableAttribute>().FirstOrDefault()
-            ?? throw new InvalidOperationException($"Missing [Table] attribute on {t.FullName}.");
+        var tableAttr = t.GetCustomAttribute<TableAttribute>()
+                         ?? throw new InvalidOperationException($"Missing [Table] on {t.Name}");
 
         var cols = new List<ColumnMeta>();
         ColumnMeta? key = null;
 
-        foreach (var prop in t.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+        foreach (var prop in t.GetProperties(BindingFlags.Instance | BindingFlags.Public))
         {
-            var colAttr = prop.GetCustomAttributes<ColumnAttribute>().FirstOrDefault();
-            var keyAttr = prop.GetCustomAttributes<KeyAttribute>().FirstOrDefault();
-            var fkAttr = prop.GetCustomAttributes<ForeignKeyAttribute>().FirstOrDefault();
+            var colAttr = prop.GetCustomAttribute<ColumnAttribute>();
+            var keyAttr = prop.GetCustomAttribute<KeyAttribute>();
 
-            if (keyAttr is not null && key is not null)
-            {
-                throw new InvalidOperationException($"Multiple [Key] attributes on {t.FullName}.");
-            }
+            if (colAttr == null && keyAttr == null)
+                continue;
 
-            var colMeta = new ColumnMeta
+            var col = new ColumnMeta
             {
                 Prop = prop,
-                Name = colAttr?.Name ?? prop.Name,
+                Name = (colAttr?.Name ?? prop.Name).ToLower(),
                 ClrType = prop.PropertyType,
                 ColAttr = colAttr,
                 KeyAttr = keyAttr,
-                FkAttr = fkAttr
+                FkAttr = prop.GetCustomAttribute<ForeignKeyAttribute>()
             };
 
-            cols.Add(colMeta);
-
-            if (keyAttr is not null)
-            {
-                key = colMeta;
-            }
+            cols.Add(col);
+            if (keyAttr != null)
+                key = col;
         }
 
-        if (key is null)
-        {
-            throw new InvalidOperationException($"Missing [Key] attribute on {t.FullName}.");
-        }
+        if (key == null)
+            throw new InvalidOperationException($"Entity {t.Name} must have [Key] property.");
 
         return new EntityMeta
         {
             ClrType = t,
-            TableName = table.Name,
+            TableName = tableAttr.Name,
             Key = key,
             Columns = cols
         };

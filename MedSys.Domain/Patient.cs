@@ -15,7 +15,7 @@ public class Patient
     public string Fname { get; set; } = default!;
 
     [Column(Name = "lname", TypeName = "VARCHAR", Length = 80, Nullable = false)]
-    public string Lname { get; set; } = default!
+    public string Lname { get; set; } = default!;
 
     [Column(Name = "birth_date", TypeName = "TIMESTAMP", Nullable = true)]
     public DateTime? BirthDate { get; set; }
