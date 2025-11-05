@@ -24,7 +24,7 @@ namespace MedSys.Orm
             if (t == typeof(double)) return "DOUBLE PRECISION";
             if (t == typeof(decimal)) return "DECIMAL(18,2)";
             if (t == typeof(DateTime)) return "TIMESTAMP";
-            if (t.IsEnum) return "INT";
+            if (t.IsEnum) return "VARCHAR(20)";
 
             var len = ca?.Length > 0 ? ca!.Length : 255;
             return $"VARCHAR({len})";

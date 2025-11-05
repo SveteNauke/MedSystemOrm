@@ -20,6 +20,12 @@ public class Patient
     [Column(Name = "birth_date", TypeName = "TIMESTAMP", Nullable = true)]
     public DateTime? BirthDate { get; set; }
 
+    [Column(Name = "email", TypeName = "VARCHAR", Length = 150, Nullable = true, Unique = true)]
+    public string? Email { get; set; }
+
+    [Column(Name = "created_at", TypeName = "TIMESTAMP", Nullable = false, DefaultSql = "NOW()")]
+    public DateTime CreatedAt { get; set; }
+
     public List<Visit> Visits { get; set; } = new();
     public List<Prescription> Prescriptions { get; set; } = new();
 }
@@ -35,11 +41,17 @@ public class Visit
     [ForeignKey("patients", "id")]
     public int PatientId { get; set; }
 
-    [Column(Name = "type", TypeName = "INT", Nullable = false)]
+    [Column(Name = "type", TypeName = "VARCHAR", Length = 20, Nullable = false)]
     public VisitType Type { get; set; }
 
     [Column(Name = "date", TypeName = "TIMESTAMP", Nullable = false, DefaultSql = "NOW()")]
     public DateTime Date { get; set; }
+
+    [Column(Name = "price", TypeName = "DECIMAL(10,2)", Nullable = false, DefaultSql = "0.00")]
+    public decimal Price { get; set; }
+
+    [Column(Name = "duration_minutes", TypeName = "FLOAT", Nullable = false)]
+    public double DurationMinutes { get; set; }
 
     public Patient? Patient { get; set; }
 }
@@ -56,6 +68,11 @@ public class Medicine
 
     [Column(Name = "manufacturer", TypeName = "VARCHAR", Length = 150, Nullable = true)]
     public string? Manufacturer { get; set; }
+
+    [Column(Name = "strength_mg", TypeName = "FLOAT", Nullable = true)]
+    public double? StrengthMg { get; set; }
+
+    public List<Prescription> Prescriptions { get; set; } = new();
 }
 
 [Table("prescription")]
@@ -73,8 +90,18 @@ public class Prescription
     [ForeignKey("medicine", "id")]
     public int MedicineId { get; set; }
 
-    [Column(Name = "dosage", TypeName = "VARCHAR", Length = 120, Nullable = false)]
-    public string Dosage { get; set; } = default!;
+    [Column(Name = "dosage", TypeName = "DECIMAL(10,2)",  Nullable = false)]
+    public decimal Dosage { get; set; }
+
+    [Column(Name = "unit", TypeName = "VARCHAR", Length = 20, Nullable = false, DefaultSql = "'mg'")]
+    public string Unit { get; set; } = "mg";
+
+
+    [Column(Name = "issued_at", TypeName = "TIMESTAMP", Nullable = false, DefaultSql = "NOW()")]
+    public DateTime IssuedAt { get; set; }
+
+    [Column(Name = "is_active", TypeName = "BOOLEAN", Nullable = false, DefaultSql = "TRUE")]
+    public bool IsActive { get; set; } = true;
 
     public Patient? Patient { get; set; }
     public Medicine? Medicine { get; set; }

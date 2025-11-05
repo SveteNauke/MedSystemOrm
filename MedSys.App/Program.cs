@@ -16,21 +16,16 @@ internal class Program
         await conn.OpenAsync();
         Console.WriteLine("Uspješno spojeno na Supabase PostgreSQL");
 
-        var meta = EntityMeta.From<Patient>();
-        var ddlGen = new DdlGenerator();
-        var ddlSql = ddlGen.CreateTableSql(meta);
 
-        Console.WriteLine("-------DDL PATIENTS-------");
-        Console.WriteLine(ddlSql);
+        var schemaCreator = new SchemaCreator(conn);
+        await schemaCreator.EnsureAsync(
+            typeof(Patient),
+            typeof(Visit),
+            typeof(Medicine),
+            typeof(Prescription)
+        );
 
-        await using (var ddlCmd = new NpgsqlCommand(ddlSql, conn))
-        {
-            await ddlCmd.ExecuteNonQueryAsync();
-        }
-        Console.WriteLine("Tabela 'patients' je kreirana ili već postoji.");
-
-        if (conn.State != ConnectionState.Open)
-            await conn.OpenAsync();
+        Console.WriteLine("Shema je osigurana (tablice kreirane ako nisu postojale).");
 
         const string insertSql = @"
             INSERT INTO patients (fname, lname, birth_date)
@@ -48,10 +43,7 @@ internal class Program
             throw new Exception("INSERT nije vratio ID.");
 
         var newId = Convert.ToInt32(newIdObj);
-        Console.WriteLine($"Ubacen pacijent s ID = {newId}");
-
-        if (conn.State != ConnectionState.Open)
-            await conn.OpenAsync();
+        Console.WriteLine($"Ubačen pacijent s ID = {newId}");
 
         const string selectSql = @"
             SELECT id, fname, lname, birth_date
@@ -83,7 +75,7 @@ internal class Program
         }
         else
         {
-            Console.WriteLine("❌ Nije pronađen pacijent s tim ID-em.");
+            Console.WriteLine("Nije pronađen pacijent s tim ID-em.");
         }
     }
 }
