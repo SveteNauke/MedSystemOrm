@@ -55,6 +55,12 @@ try
             case "8":
                 await CreateMedicineAsync(medicineRepo);
                 break;
+            case "9":
+                await DemoUnitOfWorkCommitAsync(session);
+                break;
+            case "10":
+                await DemoUnitOfWorkRollbackAsync(session);
+                break;
             case "0":
                 Console.WriteLine("Izlaz iz aplikacije...");
                 return;
@@ -87,6 +93,8 @@ static void PrintMenu()
     Console.WriteLine("6) Dodaj recept pacijentu");
     Console.WriteLine("7) Prikaži sve lijekove");
     Console.WriteLine("8) Dodaj novi lijek");
+    Console.WriteLine("9) DEMO Unit of Work – COMMIT");
+    Console.WriteLine("10) DEMO Unit of Work – ROLLBACK");
     Console.WriteLine("0) Izlaz");
 }
 
@@ -230,12 +238,12 @@ static async Task CreateVisitAsync(
     else
         date = DateTime.UtcNow;
 
-    Console.Write("Cijena (decimal, npr. 50.00): ");
+    Console.Write("Cijena (decimal): ");
     var priceStr = Console.ReadLine();
     if (!decimal.TryParse(priceStr, out var price))
         price = 0m;
 
-    Console.Write("Trajanje u minutama (npr. 30): ");
+    Console.Write("Trajanje u minutama: ");
     var durationStr = Console.ReadLine();
     if (!double.TryParse(durationStr, out var duration))
         duration = 0;
@@ -426,4 +434,118 @@ static async Task CreatePrescriptionAsync(
     await prescriptionRepo.InsertAsync(prescription);
     Console.WriteLine(
         $"Recept je uspješno dodan. ID recepta = {prescription.Id}, IssuedAt = {prescription.IssuedAt:yyyy-MM-dd HH:mm}");
+}
+
+/// =========================
+/// DEMO: Unit of Work – COMMIT
+/// =========================
+
+static async Task DemoUnitOfWorkCommitAsync(DbSession session)
+{
+    Console.WriteLine("=== DEMO Unit of Work COMMIT ===");
+    Console.WriteLine("U jednoj transakciji kreiramo: PACIJENTA + POSJET + LIJEK + RECEPT.\n");
+
+    await using var uow = new UnitOfWork(session);
+
+    try
+    {
+        await uow.BeginAsync();
+
+        var patient = new Patient
+        {
+            Fname = "Trans",
+            Lname = "Commit",
+            Email = $"commit_demo_{Guid.NewGuid():N}@example.com"
+        };
+        await uow.Patients.InsertAsync(patient);
+
+        var visit = new Visit
+        {
+            PatientId       = patient.Id,
+            Type            = VisitType.GP,
+            Date            = DateTime.UtcNow,
+            Price           = 50m,
+            DurationMinutes = 15
+        };
+        await uow.Visits.InsertAsync(visit);
+
+        var med = new Medicine
+        {
+            Name       = $"DEMO-MED-{Guid.NewGuid():N[..6]}",
+            StrengthMg = 500
+        };
+        await uow.Medicines.InsertAsync(med);
+
+        var prescription = new Prescription
+        {
+            PatientId  = patient.Id,
+            MedicineId = med.Id,
+            Dosage     = 500m,
+            Unit       = "mg",
+            IssuedAt   = DateTime.UtcNow,
+            IsActive   = true
+        };
+        await uow.Prescriptions.InsertAsync(prescription);
+
+        await uow.CommitAsync();
+
+        Console.WriteLine("Transakcija je USPJEŠNO COMMITANA.");
+        Console.WriteLine($"Pacijent ID = {patient.Id}");
+        Console.WriteLine($"Posjet ID   = {visit.Id}");
+        Console.WriteLine($"Lijek ID    = {med.Id}");
+        Console.WriteLine($"Recept ID   = {prescription.Id}");
+        Console.WriteLine("\nProvjeri sad preko opcija 1, 3, 5, 7 da vidiš upisane podatke.");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Greška u transakciji: {ex.Message}");
+        await uow.RollbackAsync();
+        Console.WriteLine("Transakcija je ROLLBACKANA ništa nije trajno upisano.");
+    }
+}
+
+/// =========================
+/// DEMO: Unit of Work – ROLLBACK
+/// =========================
+
+static async Task DemoUnitOfWorkRollbackAsync(DbSession session)
+{
+    Console.WriteLine("=== DEMO Unit of Work ROLLBACK ===");
+    Console.WriteLine("Namjerno izazivamo grešku (UNIQUE na email) unutar transakcije.\n");
+
+    await using var uow = new UnitOfWork(session);
+
+    try
+    {
+        await uow.BeginAsync();
+
+        var email = "rollback_demo@example.com";
+
+        var p1 = new Patient
+        {
+            Fname = "Trans",
+            Lname = "Rollback1",
+            Email = email
+        };
+        await uow.Patients.InsertAsync(p1);
+
+        var p2 = new Patient
+        {
+            Fname = "Trans",
+            Lname = "Rollback2",
+            Email = email
+        };
+        await uow.Patients.InsertAsync(p2);
+
+        await uow.CommitAsync();
+        Console.WriteLine("Neočekivano: transakcija je prošla bez greške (provjeri UNIQUE constraint!).");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine("Očekivana greška unutar transakcije (npr. UNIQUE na email):");
+        Console.WriteLine(ex.Message);
+        await uow.RollbackAsync();
+        Console.WriteLine("\nTransakcija je ROLLBACKANA – ništa nije trajno upisano.");
+        Console.WriteLine("Provjeri preko opcije 1 da vidiš da nema pacijenta s emailom rollback_demo@example.com.");
+    }
 }
