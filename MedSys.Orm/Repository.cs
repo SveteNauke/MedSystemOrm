@@ -118,7 +118,88 @@ namespace MedSys.Orm
             return list;
         }
 
-        // Pomoćna: mapiraj NpgsqlDataReader -> T koristeći EntityMeta
+        public async Task<int> UpdateAsync(T entity)
+        {
+            await _session.OpenAsync();
+
+            var keyCol = _meta.Key
+                        ?? throw new InvalidOperationException($"Entitet {_meta.ClrType.Name} nema ključ.");
+
+            var keyValue = keyCol.Prop.GetValue(entity)
+                           ?? throw new InvalidOperationException("Vrijednost ključa ne može biti null.");
+
+            var cols = _meta.Columns
+                .Where(c => !c.IsKey)
+                .ToList();
+
+            var setClauses = string.Join(", ", cols.Select(c => $"{Q(c.Name)} = @{c.Name}"));
+
+            var sql = $"UPDATE {Q(_meta.TableName)} SET {setClauses} " +
+                      $"WHERE {Q(keyCol.Name)} = @key;";
+
+            await using var cmd = new NpgsqlCommand(sql, _session.Connection);
+            if (_session.Transaction != null)
+                cmd.Transaction = _session.Transaction;
+
+            foreach (var c in cols)
+            {
+                var value = c.Prop.GetValue(entity);
+
+                var clrType = Nullable.GetUnderlyingType(c.ClrType) ?? c.ClrType;
+                if (clrType.IsEnum && value != null)
+                {
+                    value = value.ToString();
+                }
+
+                cmd.Parameters.AddWithValue(c.Name, value ?? DBNull.Value);
+            }
+
+            cmd.Parameters.AddWithValue("key", keyValue);
+
+            return await cmd.ExecuteNonQueryAsync();
+        }
+
+        public async Task<int> DeleteAsync(object id)
+        {
+            await _session.OpenAsync();
+
+            var keyCol = _meta.Key
+                        ?? throw new InvalidOperationException($"Entitet {_meta.ClrType.Name} nema ključ.");
+
+            var sql = $"DELETE FROM {Q(_meta.TableName)} WHERE {Q(keyCol.Name)} = @id;";
+
+            await using var cmd = new NpgsqlCommand(sql, _session.Connection);
+            if (_session.Transaction != null)
+                cmd.Transaction = _session.Transaction;
+
+            cmd.Parameters.AddWithValue("id", id);
+
+            return await cmd.ExecuteNonQueryAsync();
+        }
+
+        public async Task<List<T>> QueryAsync(Action<QueryBuilder>? config = null)
+        {
+            await _session.OpenAsync();
+
+            var qb = new QueryBuilder(Q(_meta.TableName)); // tablica već quoted
+            config?.Invoke(qb);
+            var sql = qb.BuildSelect();
+
+            await using var cmd = new NpgsqlCommand(sql, _session.Connection);
+            if (_session.Transaction != null)
+                cmd.Transaction = _session.Transaction;
+
+            var list = new List<T>();
+
+            await using var reader = await cmd.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                list.Add(MapEntity(reader));
+            }
+
+            return list;
+        }
+        
         private T MapEntity(NpgsqlDataReader reader)
         {
             var entity = new T();

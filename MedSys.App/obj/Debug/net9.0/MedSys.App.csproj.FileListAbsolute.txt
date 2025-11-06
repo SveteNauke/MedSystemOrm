@@ -23,16 +23,16 @@ C:\Users\Farah Mulaomerovic\Desktop\MedSystemOrm\MedSys.App\obj\Debug\net9.0\Med
 C:\Users\Farah Mulaomerovic\Desktop\MedSystemOrm\MedSys.App\obj\Debug\net9.0\MedSys.App.genruntimeconfig.cache
 C:\Users\Farah Mulaomerovic\Desktop\MedSystemOrm\MedSys.App\obj\Debug\net9.0\ref\MedSys.App.dll
 C:\Users\Farah\Desktop\MedSystemOrm\MedSys.App\bin\Debug\net9.0\MedSys.App.exe
+C:\Users\Farah\Desktop\MedSystemOrm\MedSys.App\bin\Debug\net9.0\MedSys.App.deps.json
+C:\Users\Farah\Desktop\MedSystemOrm\MedSys.App\bin\Debug\net9.0\MedSys.App.runtimeconfig.json
 C:\Users\Farah\Desktop\MedSystemOrm\MedSys.App\bin\Debug\net9.0\MedSys.App.dll
+C:\Users\Farah\Desktop\MedSystemOrm\MedSys.App\bin\Debug\net9.0\MedSys.App.pdb
+C:\Users\Farah\Desktop\MedSystemOrm\MedSys.App\bin\Debug\net9.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll
 C:\Users\Farah\Desktop\MedSystemOrm\MedSys.App\bin\Debug\net9.0\Microsoft.Extensions.Logging.Abstractions.dll
 C:\Users\Farah\Desktop\MedSystemOrm\MedSys.App\bin\Debug\net9.0\Npgsql.dll
 C:\Users\Farah\Desktop\MedSystemOrm\MedSys.App\bin\Debug\net9.0\MedSys.Domain.dll
 C:\Users\Farah\Desktop\MedSystemOrm\MedSys.App\bin\Debug\net9.0\MedSys.Orm.dll
 C:\Users\Farah\Desktop\MedSystemOrm\MedSys.App\bin\Debug\net9.0\MedSys.Orm.pdb
-C:\Users\Farah\Desktop\MedSystemOrm\MedSys.App\bin\Debug\net9.0\MedSys.App.deps.json
-C:\Users\Farah\Desktop\MedSystemOrm\MedSys.App\bin\Debug\net9.0\MedSys.App.runtimeconfig.json
-C:\Users\Farah\Desktop\MedSystemOrm\MedSys.App\bin\Debug\net9.0\MedSys.App.pdb
-C:\Users\Farah\Desktop\MedSystemOrm\MedSys.App\bin\Debug\net9.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll
 C:\Users\Farah\Desktop\MedSystemOrm\MedSys.App\bin\Debug\net9.0\MedSys.Domain.pdb
 C:\Users\Farah\Desktop\MedSystemOrm\MedSys.App\obj\Debug\net9.0\MedSys.App.csproj.AssemblyReference.cache
 C:\Users\Farah\Desktop\MedSystemOrm\MedSys.App\obj\Debug\net9.0\MedSys.App.GeneratedMSBuildEditorConfig.editorconfig
