@@ -1,16 +1,3 @@
-C:\Users\Farah\Desktop\MedSystemOrm\MedSys.Orm\bin\Debug\net9.0\MedSys.Orm.deps.json
-C:\Users\Farah\Desktop\MedSystemOrm\MedSys.Orm\bin\Debug\net9.0\MedSys.Orm.dll
-C:\Users\Farah\Desktop\MedSystemOrm\MedSys.Orm\bin\Debug\net9.0\MedSys.Orm.pdb
-C:\Users\Farah\Desktop\MedSystemOrm\MedSys.Orm\obj\Debug\net9.0\MedSys.Orm.csproj.AssemblyReference.cache
-C:\Users\Farah\Desktop\MedSystemOrm\MedSys.Orm\obj\Debug\net9.0\MedSys.Orm.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\Farah\Desktop\MedSystemOrm\MedSys.Orm\obj\Debug\net9.0\MedSys.Orm.AssemblyInfoInputs.cache
-C:\Users\Farah\Desktop\MedSystemOrm\MedSys.Orm\obj\Debug\net9.0\MedSys.Orm.AssemblyInfo.cs
-C:\Users\Farah\Desktop\MedSystemOrm\MedSys.Orm\obj\Debug\net9.0\MedSys.Orm.csproj.CoreCompileInputs.cache
-C:\Users\Farah\Desktop\MedSystemOrm\MedSys.Orm\obj\Debug\net9.0\MedSys.Orm.sourcelink.json
-C:\Users\Farah\Desktop\MedSystemOrm\MedSys.Orm\obj\Debug\net9.0\MedSys.Orm.dll
-C:\Users\Farah\Desktop\MedSystemOrm\MedSys.Orm\obj\Debug\net9.0\refint\MedSys.Orm.dll
-C:\Users\Farah\Desktop\MedSystemOrm\MedSys.Orm\obj\Debug\net9.0\MedSys.Orm.pdb
-C:\Users\Farah\Desktop\MedSystemOrm\MedSys.Orm\obj\Debug\net9.0\ref\MedSys.Orm.dll
 C:\Users\Farah Mulaomerovic\Desktop\MedSystemOrm\MedSys.Orm\bin\Debug\net9.0\MedSys.Orm.deps.json
 C:\Users\Farah Mulaomerovic\Desktop\MedSystemOrm\MedSys.Orm\bin\Debug\net9.0\MedSys.Orm.dll
 C:\Users\Farah Mulaomerovic\Desktop\MedSystemOrm\MedSys.Orm\bin\Debug\net9.0\MedSys.Orm.pdb
@@ -24,3 +11,16 @@ C:\Users\Farah Mulaomerovic\Desktop\MedSystemOrm\MedSys.Orm\obj\Debug\net9.0\Med
 C:\Users\Farah Mulaomerovic\Desktop\MedSystemOrm\MedSys.Orm\obj\Debug\net9.0\refint\MedSys.Orm.dll
 C:\Users\Farah Mulaomerovic\Desktop\MedSystemOrm\MedSys.Orm\obj\Debug\net9.0\MedSys.Orm.pdb
 C:\Users\Farah Mulaomerovic\Desktop\MedSystemOrm\MedSys.Orm\obj\Debug\net9.0\ref\MedSys.Orm.dll
+C:\Users\Farah\Desktop\MedSystemOrm\MedSys.Orm\bin\Debug\net9.0\MedSys.Orm.deps.json
+C:\Users\Farah\Desktop\MedSystemOrm\MedSys.Orm\bin\Debug\net9.0\MedSys.Orm.dll
+C:\Users\Farah\Desktop\MedSystemOrm\MedSys.Orm\bin\Debug\net9.0\MedSys.Orm.pdb
+C:\Users\Farah\Desktop\MedSystemOrm\MedSys.Orm\obj\Debug\net9.0\MedSys.Orm.csproj.AssemblyReference.cache
+C:\Users\Farah\Desktop\MedSystemOrm\MedSys.Orm\obj\Debug\net9.0\MedSys.Orm.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Farah\Desktop\MedSystemOrm\MedSys.Orm\obj\Debug\net9.0\MedSys.Orm.AssemblyInfoInputs.cache
+C:\Users\Farah\Desktop\MedSystemOrm\MedSys.Orm\obj\Debug\net9.0\MedSys.Orm.AssemblyInfo.cs
+C:\Users\Farah\Desktop\MedSystemOrm\MedSys.Orm\obj\Debug\net9.0\MedSys.Orm.csproj.CoreCompileInputs.cache
+C:\Users\Farah\Desktop\MedSystemOrm\MedSys.Orm\obj\Debug\net9.0\MedSys.Orm.sourcelink.json
+C:\Users\Farah\Desktop\MedSystemOrm\MedSys.Orm\obj\Debug\net9.0\MedSys.Orm.dll
+C:\Users\Farah\Desktop\MedSystemOrm\MedSys.Orm\obj\Debug\net9.0\refint\MedSys.Orm.dll
+C:\Users\Farah\Desktop\MedSystemOrm\MedSys.Orm\obj\Debug\net9.0\MedSys.Orm.pdb
+C:\Users\Farah\Desktop\MedSystemOrm\MedSys.Orm\obj\Debug\net9.0\ref\MedSys.Orm.dll
