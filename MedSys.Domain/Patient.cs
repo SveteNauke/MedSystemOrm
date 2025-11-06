@@ -23,6 +23,9 @@ public class Patient
     [Column(Name = "email", TypeName = "VARCHAR", Length = 150, Nullable = true, Unique = true)]
     public string? Email { get; set; }
 
+    [Column(Name = "phone", TypeName = "VARCHAR", Length = 20, Nullable = true)]
+    public string? Phone { get; set; }
+
     [Column(Name = "created_at", TypeName = "TIMESTAMP", Nullable = false, DefaultSql = "NOW()")]
     public DateTime CreatedAt { get; set; }
 

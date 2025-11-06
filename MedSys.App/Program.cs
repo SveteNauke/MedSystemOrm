@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MedSys.Domain;
 using MedSys.Orm;
-using MedSys.App; 
+using MedSys.App;
 
 internal class Program
 {
@@ -25,87 +25,127 @@ internal class Program
         );
         Console.WriteLine("Shema je osigurana (tablice kreirane ako nisu postojale).");
 
+        var migrator = new Migrator(session);
+        var migrations = new IMigration[]
+        {
+            new AddPhoneToPatientsMigration()
+        };
+        await migrator.ApplyAsync(migrations);
+        Console.WriteLine("Migracije su primijenjene.");
+
 
         var patientRepo = new Repository<Patient>(session);
         var visitRepo = new Repository<Visit>(session);
         var medicineRepo = new Repository<Medicine>(session);
         var prescriptionRepo = new Repository<Prescription>(session);
 
-        await session.BeginTransactionAsync();
+        var existingPatients = await patientRepo.QueryAsync(q =>
+            q.Where("\"lname\" = 'Mirkić'")
+             .OrderBy("\"id\" ASC"));
+
+        Patient patient;
         int patientId;
-        try
+
+        if (existingPatients.Any())
         {
-            var patient = new Patient
+            patient = existingPatients.First();
+            patientId = patient.Id;
+            Console.WriteLine($"Pacijent '{patient.Fname} {patient.Lname}' već postoji (ID = {patientId}).");
+        }
+        else
+        {
+            await session.BeginTransactionAsync();
+            try
             {
-                Fname = "Mirko",
-                Lname = "Mirkić",
-                BirthDate = new DateTime(1995, 2, 25),
-                Email = "m.mirkic@example.com",
-                CreatedAt = DateTime.UtcNow
-            };
+                patient = new Patient
+                {
+                    Fname = "Ana",
+                    Lname = "Anić",
+                    BirthDate = new DateTime(1992, 1, 12),
+                    Email = "a.anic@example.com",
+                    Phone = "+385 91 555 9921",
+                    CreatedAt = DateTime.UtcNow
+                };
 
-            patientId = await patientRepo.InsertAsync(patient);
+                patientId = await patientRepo.InsertAsync(patient);
+                await session.CommitTransactionAsync();
+                Console.WriteLine($"Ubačen novi pacijent '{patient.Fname} {patient.Lname}' (ID = {patientId}).");
+            }
+            catch
+            {
+                await session.RollbackTransactionAsync();
+                Console.WriteLine("Došlo je do greške transakcija je rollback-ana.");
+                throw;
+            }
+        }
 
+        var existingMedicine = await medicineRepo.QueryAsync(q =>
+            q.Where("\"name\" = 'Zoloft'")
+             .OrderBy("\"id\" ASC"));
+
+        int medicineId;
+        if (existingMedicine.Any())
+        {
+            medicineId = existingMedicine.First().Id;
+            Console.WriteLine($"Lijek već postoji (ID = {medicineId}).");
+        }
+        else
+        {
             var medicine = new Medicine
             {
-                Name = "Zoloft",
-                Manufacturer = "Pliva",
-                StrengthMg = 50
+                Name = "Zithromax",
+                Manufacturer = "Pfizer",
+                StrengthMg = 500
             };
+            medicineId = await medicineRepo.InsertAsync(medicine);
+            Console.WriteLine($"Ubačen novi lijek (ID = {medicineId}).");
+        }
 
-            var medicineId = await medicineRepo.InsertAsync(medicine);
-
+        await session.BeginTransactionAsync();
+        try
+        {
             var visit = new Visit
             {
                 PatientId = patientId,
-                Type = VisitType.GP,
+                Type = VisitType.BLOOD,
                 Date = DateTime.UtcNow,
-                Price = 50.00m,
-                DurationMinutes = 15
+                Price = 20.12m,
+                DurationMinutes = 13
             };
-
             await visitRepo.InsertAsync(visit);
 
             var prescription = new Prescription
             {
                 PatientId = patientId,
                 MedicineId = medicineId,
-                Dosage = 400m,
+                Dosage = 500,
                 Unit = "mg",
                 IssuedAt = DateTime.UtcNow,
                 IsActive = true
             };
-
             await prescriptionRepo.InsertAsync(prescription);
 
             await session.CommitTransactionAsync();
-            Console.WriteLine($"Ubačen pacijent s ID = {patientId} zajedno s posjetom i receptom (ORM + transakcija).");
+            Console.WriteLine($"Dodan novi posjet i recept za pacijenta ID = {patientId}.");
         }
         catch
         {
             await session.RollbackTransactionAsync();
-            Console.WriteLine("Došlo je do greške transakcija je rollback-ana.");
+            Console.WriteLine("Greška pri dodavanju posjeta ili recepta, rollback.");
             throw;
         }
 
         var patients = await patientRepo.QueryAsync(q =>
-            q.Where("\"lname\" = 'Mirkić'")
-             .OrderBy("\"id\" DESC"));
+            q.Where("\"id\" = " + patientId));
 
         var patientList = patients.ToList();
-        if (patientList.Count == 0)
-        {
-            Console.WriteLine("Nema pacijenata s prezimenom Kovač.");
-            return;
-        }
 
         await NavigationLoader.LoadVisitsAsync(session, patientList);
         await NavigationLoader.LoadPrescriptionsAsync(session, patientList);
-
         var allPrescriptions = patientList.SelectMany(p => p.Prescriptions).ToList();
         await NavigationLoader.LoadMedicinesAsync(session, allPrescriptions);
 
-        var p0 = patientList[0];
+        var p0 = patientList.First();
         var birthText = p0.BirthDate?.ToString("yyyy-MM-dd") ?? "N/A";
 
         Console.WriteLine();
@@ -114,6 +154,7 @@ internal class Program
         Console.WriteLine($"Ime:     {p0.Fname}");
         Console.WriteLine($"Prezime: {p0.Lname}");
         Console.WriteLine($"Rođen:   {birthText}");
+        Console.WriteLine($"Telefon: {p0.Phone ?? "N/A"}");
         Console.WriteLine();
 
         Console.WriteLine("  Posjeti:");
@@ -127,7 +168,8 @@ internal class Program
         foreach (var pr in p0.Prescriptions)
         {
             var medName = pr.Medicine?.Name ?? "(nepoznat lijek)";
-            Console.WriteLine($"    {medName} {pr.Dosage} {pr.Unit}  (izdan: {pr.IssuedAt:yyyy-MM-dd}, aktivan: {pr.IsActive})");
+            Console.WriteLine($"    [ID: {pr.Id}] {medName} {pr.Dosage} {pr.Unit}  " +
+                              $"(izdan: {pr.IssuedAt:yyyy-MM-dd HH:mm}, aktivan: {pr.IsActive})");
         }
     }
 }
