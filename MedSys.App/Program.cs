@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MedSys.Domain;
 using MedSys.Orm;
+using MedSys.Orm.Migrations;
 
 Console.OutputEncoding = Encoding.UTF8;
 
@@ -17,10 +18,28 @@ try
 
     Console.WriteLine("Uspješno spojeno na bazu.\n");
 
-    var patientRepo      = new Repository<Patient>(session);
-    var visitRepo        = new Repository<Visit>(session);
-    var medicineRepo     = new Repository<Medicine>(session);
+    var patientRepo = new Repository<Patient>(session);
+    var visitRepo = new Repository<Visit>(session);
+    var medicineRepo = new Repository<Medicine>(session);
     var prescriptionRepo = new Repository<Prescription>(session);
+
+    if (args.Length > 0 && args[0].Equals("migrate", StringComparison.OrdinalIgnoreCase))
+    {
+        await using var migSession = new DbSession(connString);
+        await migSession.OpenAsync();
+
+        await Migrator.MigrateUpAsync(migSession);
+        return;
+    }
+
+    if (args.Length > 0 && args[0].Equals("rollback", StringComparison.OrdinalIgnoreCase))
+    {
+        await using var migSession = new DbSession(connString);
+        await migSession.OpenAsync();
+
+        await Migrator.MigrateDownLastAsync(migSession);
+        return;
+    }
 
     while (true)
     {
@@ -145,11 +164,11 @@ static async Task CreatePatientAsync(Repository<Patient> repo)
 
     var patient = new Patient
     {
-        Fname     = fname,
-        Lname     = lname,
+        Fname = fname,
+        Lname = lname,
         BirthDate = birthDate,
-        Email     = string.IsNullOrWhiteSpace(email) ? null : email,
-        Phone     = string.IsNullOrWhiteSpace(phone) ? null : phone,
+        Email = string.IsNullOrWhiteSpace(email) ? null : email,
+        Phone = string.IsNullOrWhiteSpace(phone) ? null : phone,
     };
 
     await repo.InsertAsync(patient);
@@ -250,11 +269,11 @@ static async Task CreateVisitAsync(
 
     var visit = new Visit
     {
-        PatientId        = pid,
-        Type             = type,
-        Date             = date,
-        Price            = price,
-        DurationMinutes  = duration
+        PatientId = pid,
+        Type = type,
+        Date = date,
+        Price = price,
+        DurationMinutes = duration
     };
 
     await visitRepo.InsertAsync(visit);
@@ -302,9 +321,9 @@ static async Task CreateMedicineAsync(Repository<Medicine> medicineRepo)
 
     var med = new Medicine
     {
-        Name         = name,
+        Name = name,
         Manufacturer = string.IsNullOrWhiteSpace(manufacturer) ? null : manufacturer,
-        StrengthMg   = strength
+        StrengthMg = strength
     };
 
     await medicineRepo.InsertAsync(med);
@@ -423,12 +442,12 @@ static async Task CreatePrescriptionAsync(
 
     var prescription = new Prescription
     {
-        PatientId  = pid,
+        PatientId = pid,
         MedicineId = mid,
-        Dosage     = dosage,
-        Unit       = unit,
-        IssuedAt   = DateTime.UtcNow,
-        IsActive   = true
+        Dosage = dosage,
+        Unit = unit,
+        IssuedAt = DateTime.UtcNow,
+        IsActive = true
     };
 
     await prescriptionRepo.InsertAsync(prescription);
@@ -461,29 +480,29 @@ static async Task DemoUnitOfWorkCommitAsync(DbSession session)
 
         var visit = new Visit
         {
-            PatientId       = patient.Id,
-            Type            = VisitType.GP,
-            Date            = DateTime.UtcNow,
-            Price           = 50m,
+            PatientId = patient.Id,
+            Type = VisitType.GP,
+            Date = DateTime.UtcNow,
+            Price = 50m,
             DurationMinutes = 15
         };
         await uow.Visits.InsertAsync(visit);
 
         var med = new Medicine
         {
-            Name       = $"DEMO-MED-{Guid.NewGuid():N[..6]}",
+            Name = $"DEMO-MED-{Guid.NewGuid():N[..6]}",
             StrengthMg = 500
         };
         await uow.Medicines.InsertAsync(med);
 
         var prescription = new Prescription
         {
-            PatientId  = patient.Id,
+            PatientId = patient.Id,
             MedicineId = med.Id,
-            Dosage     = 500m,
-            Unit       = "mg",
-            IssuedAt   = DateTime.UtcNow,
-            IsActive   = true
+            Dosage = 500m,
+            Unit = "mg",
+            IssuedAt = DateTime.UtcNow,
+            IsActive = true
         };
         await uow.Prescriptions.InsertAsync(prescription);
 

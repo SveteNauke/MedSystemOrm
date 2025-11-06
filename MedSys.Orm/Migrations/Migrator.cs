@@ -1,140 +1,157 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Npgsql;
 
-namespace MedSys.Orm
+namespace MedSys.Orm.Migrations;
+
+public static class Migrator
 {
-    public sealed class Migrator
+    private const string MigrationTable = "__migrations";
+
+    public static async Task MigrateUpAsync(DbSession session)
     {
-        private readonly DbSession _session;
-        private const string MigrationsTable = "__migrations";
+        await EnsureMigrationsTableAsync(session);
 
-        private static string Q(string ident) => PgTypeMapper.Quote(ident);
+        var applied = await GetAppliedMigrationIdsAsync(session);
 
-        public Migrator(DbSession session)
+        var migrationTypes = typeof(IMigration).Assembly
+            .GetTypes()
+            .Where(t => !t.IsAbstract && typeof(IMigration).IsAssignableFrom(t))
+            .ToList();
+
+        var migrations = migrationTypes
+            .Select(t => (IMigration)Activator.CreateInstance(t)!)
+            .OrderBy(m => m.Id)
+            .ToList();
+
+        foreach (var m in migrations)
         {
-            _session = session;
+            if (applied.Contains(m.Id))
+                continue;
+
+            Console.WriteLine($"[MIGRATE UP] {m.Id} – {m.Name}");
+            await m.UpAsync(session);
+            await InsertMigrationRowAsync(session, m.Id, m.Name);
         }
 
-        /// <summary>
-        /// Osiguraj da tablica __migrations postoji.
-        /// </summary>
-        private async Task EnsureMigrationsTableAsync()
+        Console.WriteLine("Sve nove migracije su izvršene.");
+    }
+
+    public static async Task MigrateDownLastAsync(DbSession session)
+    {
+        await EnsureMigrationsTableAsync(session);
+
+        var applied = await GetAppliedMigrationsAsync(session);
+        if (applied.Count == 0)
         {
-            await _session.OpenAsync();
-
-            var sql = $@"
-                CREATE TABLE IF NOT EXISTS {Q(MigrationsTable)} (
-                    id VARCHAR(100) PRIMARY KEY,
-                    applied_at TIMESTAMP NOT NULL DEFAULT NOW()
-                );
-            ";
-
-            await using var cmd = new NpgsqlCommand(sql, _session.Connection);
-            await cmd.ExecuteNonQueryAsync();
+            Console.WriteLine("Nema primijenjenih migracija za rollback.");
+            return;
         }
 
-        /// <summary>
-        /// Dohvati id-ove već primijenjenih migracija.
-        /// </summary>
-        private async Task<HashSet<string>> GetAppliedIdsAsync()
+        var last = applied.OrderByDescending(m => m.appliedAt).First();
+
+        var migrationType = typeof(IMigration).Assembly
+            .GetTypes()
+            .FirstOrDefault(t =>
+                !t.IsAbstract &&
+                typeof(IMigration).IsAssignableFrom(t) &&
+                ((IMigration)Activator.CreateInstance(t)!).Id == last.id);
+
+        if (migrationType == null)
         {
-            await EnsureMigrationsTableAsync();
-
-            var result = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-            var sql = $"SELECT id FROM {Q(MigrationsTable)};";
-            await using var cmd = new NpgsqlCommand(sql, _session.Connection);
-
-            await using var reader = await cmd.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-            {
-                result.Add(reader.GetString(0));
-            }
-
-            return result;
+            Console.WriteLine($"Upozorenje: ne mogu pronaći klasu za migraciju '{last.id}'.");
+            return;
         }
 
-        /// <summary>
-        /// Primijeni sve migracije koje još nisu primijenjene (REDOSLIJED po kolekciji).
-        /// </summary>
-        public async Task ApplyAsync(IEnumerable<IMigration> migrations)
+        var migration = (IMigration)Activator.CreateInstance(migrationType)!;
+
+        Console.WriteLine($"[MIGRATE DOWN] {migration.Id} – {migration.Name}");
+        await migration.DownAsync(session);
+        await DeleteMigrationRowAsync(session, migration.Id);
+
+        Console.WriteLine("Rollback zadnje migracije završen.");
+    }
+
+ 
+
+    private static async Task EnsureMigrationsTableAsync(DbSession session)
+    {
+        await session.OpenAsync();
+
+        var sql = $@"
+            CREATE TABLE IF NOT EXISTS {MigrationTable} (
+                id          VARCHAR(100) PRIMARY KEY,
+                name        VARCHAR(255) NOT NULL,
+                applied_at  TIMESTAMP    NOT NULL DEFAULT NOW()
+            );
+        ";
+
+        await using var cmd = new NpgsqlCommand(sql, session.Connection);
+        await cmd.ExecuteNonQueryAsync();
+    }
+
+    private static async Task<HashSet<string>> GetAppliedMigrationIdsAsync(DbSession session)
+    {
+        await session.OpenAsync();
+
+        var set = new HashSet<string>();
+
+        var sql = $"SELECT id FROM {MigrationTable};";
+        await using var cmd = new NpgsqlCommand(sql, session.Connection);
+        await using var reader = await cmd.ExecuteReaderAsync();
+
+        while (await reader.ReadAsync())
         {
-            await _session.OpenAsync();
-            var applied = await GetAppliedIdsAsync();
-
-            foreach (var m in migrations)
-            {
-                if (applied.Contains(m.Id))
-                {
-                    Console.WriteLine($"[Migrator] Preskačem već primijenjenu migraciju {m.Id}");
-                    continue;
-                }
-
-                Console.WriteLine($"[Migrator] Primjenjujem migraciju {m.Id}...");
-
-                await using var tx = await _session.Connection.BeginTransactionAsync();
-                try
-                {
-                    await using (var cmd = new NpgsqlCommand(m.UpSql, _session.Connection, tx))
-                    {
-                        await cmd.ExecuteNonQueryAsync();
-                    }
-
-                    var insertSql = $"INSERT INTO {Q(MigrationsTable)} (id) VALUES (@id);";
-                    await using (var cmd = new NpgsqlCommand(insertSql, _session.Connection, tx))
-                    {
-                        cmd.Parameters.AddWithValue("id", m.Id);
-                        await cmd.ExecuteNonQueryAsync();
-                    }
-
-                    await tx.CommitAsync();
-                    Console.WriteLine($"[Migrator] Migracija {m.Id} uspješno primijenjena.");
-                }
-                catch
-                {
-                    await tx.RollbackAsync();
-                    Console.WriteLine($"[Migrator] Greška pri migraciji {m.Id}, rollback.");
-                    throw;
-                }
-            }
+            set.Add(reader.GetString(0));
         }
 
-        /// <summary>
-        /// Rollback konkretne migracije (pomoću njezinog DownSql-a).
-        /// </summary>
-        public async Task RollbackAsync(IMigration migration)
+        return set;
+    }
+
+    private static async Task<List<(string id, DateTime appliedAt)>> GetAppliedMigrationsAsync(DbSession session)
+    {
+        await session.OpenAsync();
+
+        var list = new List<(string id, DateTime appliedAt)>();
+
+        var sql = $"SELECT id, applied_at FROM {MigrationTable};";
+        await using var cmd = new NpgsqlCommand(sql, session.Connection);
+        await using var reader = await cmd.ExecuteReaderAsync();
+
+        while (await reader.ReadAsync())
         {
-            await _session.OpenAsync();
-            await EnsureMigrationsTableAsync();
-
-            Console.WriteLine($"[Migrator] Rollback migracije {migration.Id}...");
-
-            await using var tx = await _session.Connection.BeginTransactionAsync();
-            try
-            {
-                await using (var cmd = new NpgsqlCommand(migration.DownSql, _session.Connection, tx))
-                {
-                    await cmd.ExecuteNonQueryAsync();
-                }
-
-                var deleteSql = $"DELETE FROM {Q(MigrationsTable)} WHERE id = @id;";
-                await using (var cmd = new NpgsqlCommand(deleteSql, _session.Connection, tx))
-                {
-                    cmd.Parameters.AddWithValue("id", migration.Id);
-                    await cmd.ExecuteNonQueryAsync();
-                }
-
-                await tx.CommitAsync();
-                Console.WriteLine($"[Migrator] Migracija {migration.Id} rollback-ana.");
-            }
-            catch
-            {
-                await tx.RollbackAsync();
-                Console.WriteLine($"[Migrator] Greška pri rollbacku {migration.Id}, rollback transakcije.");
-                throw;
-            }
+            var id  = reader.GetString(0);
+            var at  = reader.GetDateTime(1);
+            list.Add((id, at));
         }
+
+        return list;
+    }
+
+    private static async Task InsertMigrationRowAsync(DbSession session, string id, string name)
+    {
+        await session.OpenAsync();
+
+        var sql = $@"
+            INSERT INTO {MigrationTable} (id, name, applied_at)
+            VALUES (@id, @name, NOW());
+        ";
+
+        await using var cmd = new NpgsqlCommand(sql, session.Connection);
+        cmd.Parameters.AddWithValue("id", id);
+        cmd.Parameters.AddWithValue("name", name);
+        await cmd.ExecuteNonQueryAsync();
+    }
+
+    private static async Task DeleteMigrationRowAsync(DbSession session, string id)
+    {
+        await session.OpenAsync();
+
+        var sql = $@"DELETE FROM {MigrationTable} WHERE id = @id;";
+        await using var cmd = new NpgsqlCommand(sql, session.Connection);
+        cmd.Parameters.AddWithValue("id", id);
+        await cmd.ExecuteNonQueryAsync();
     }
 }

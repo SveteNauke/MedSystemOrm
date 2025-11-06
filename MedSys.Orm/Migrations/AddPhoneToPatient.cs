@@ -1,17 +1,42 @@
-namespace MedSys.Orm
-{
-    public sealed class AddPhoneToPatientsMigration : IMigration
-    {
-        public string Id => "20251106_add_phone_to_patients";
+using System.Threading.Tasks;
+using Npgsql;
 
-        public string UpSql => @"
-            ALTER TABLE ""patients""
-            ADD COLUMN IF NOT EXISTS ""phone"" VARCHAR(20);
+namespace MedSys.Orm.Migrations;
+
+public sealed class AddPhoneToPatient : IMigration
+{
+    public string Id   => "20241106_AddPhoneToPatient";
+    public string Name => "Add phone column to patients";
+
+    public async Task UpAsync(DbSession session)
+    {
+        await session.OpenAsync();
+
+        var sql = @"
+            ALTER TABLE IF EXISTS patients
+            ADD COLUMN IF NOT EXISTS phone VARCHAR(20);
         ";
-        
-        public string DownSql => @"
-            ALTER TABLE ""patients""
-            DROP COLUMN IF EXISTS ""phone"";
+
+        await using var cmd = new NpgsqlCommand(sql, session.Connection);
+        if (session.Transaction != null)
+            cmd.Transaction = session.Transaction;
+
+        await cmd.ExecuteNonQueryAsync();
+    }
+
+    public async Task DownAsync(DbSession session)
+    {
+        await session.OpenAsync();
+
+        var sql = @"
+            ALTER TABLE IF EXISTS patients
+            DROP COLUMN IF EXISTS phone;
         ";
+
+        await using var cmd = new NpgsqlCommand(sql, session.Connection);
+        if (session.Transaction != null)
+            cmd.Transaction = session.Transaction;
+
+        await cmd.ExecuteNonQueryAsync();
     }
 }
